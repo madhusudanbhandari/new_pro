@@ -37,7 +37,8 @@ class PatientSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True)
-
+    username=serializers.CharField()
+    
     class Meta:
         model=User
         fields=['id','username','email','password','role']
@@ -51,10 +52,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self,validated_data):
         password=validated_data.pop('password')
 
-        email=validated_data.get('email')
+        # email=validated_data.get('email')
         user=User(**validated_data)
         
-        user.username=email
+        # user.username=email
         user.set_password(password)
         user.save()
 
@@ -87,6 +88,7 @@ class LoginSerializer(serializers.Serializer):
             'refresh':str(refresh),
             'access':str(refresh.access_token),
             'role':user.role,
+            'email':user.email,
             'username':user.username,
-            'email':user.email
+          
         }

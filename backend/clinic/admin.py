@@ -3,7 +3,8 @@ from .models import User,DoctorProfile,PatientProfile,AdminProfile
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display=['username','email','role']
+    list_display=('username','email','role')
+    ordering=('username',)
 
 @admin.register(DoctorProfile)
 class DoctorAdmin(admin.ModelAdmin):

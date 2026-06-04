@@ -8,12 +8,15 @@ class User(AbstractUser):
         ('doctor','Doctor'),
         ('patient','Patient'),
     )
+    # username=models.CharField(max_length=150,unique=True,validators=[])
     
-    role=models.CharField(max_length=10,choices=ROLE_CHOICES)
+    role=models.CharField(max_length=10,choices=ROLE_CHOICES,blank=True)
     email=models.EmailField(unique=True)
 
-    USERNAME_FIELD='email'
-    REQUIRED_FIELDS=['username']
+    # USERNAME_FIELD='email'
+    # REQUIRED_FIELDS=['username']
+    def __str__(self):
+        return self.email
 
 class DoctorProfile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE,related_name="doctor_profile")
