@@ -1,5 +1,5 @@
 import React from "react";
-import {data, Link,useNavigate} from 'react-router';
+import {data, Link,useNavigate} from 'react-router-dom';
 import { useState } from "react";
 
 export default function Login(){
@@ -21,11 +21,12 @@ export default function Login(){
         setLoading(true);
 
         try{
-            const response=await fetch('http://127.0.0.1:8000/api/login',{
+            const response=await fetch('http://127.0.0.1:8000/api/login/',{
                 method:'POST',
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify(form),
             });
+            const data=await response.json();
 
             if (response.ok){
                 localStorage.setItem('access',data.access);
@@ -33,9 +34,9 @@ export default function Login(){
                 localStorage.setItem('role',data.role);
                 localStorage.setItem('email',data.email);
 
-                if (data.role==='doctor') navigate('/doctordashboard');
-                else if (data.role==='patient' ) navigate('patientdashboard')
-                else if(data.role==='admin')  navigate('/admindashboard');
+                if (data.role==='doctor') navigate('/doctordashboard')
+                else if (data.role==='patient' ) navigate('/patientdashboard')
+                else if(data.role==='admin')  navigate('/admindashboard')
 
             }else{
                 setError(data.non_field_errors?.[0] || 'Login failed. Check your credentials.');

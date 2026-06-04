@@ -15,8 +15,8 @@ export default function App(){
         <Route path="/" element={<Login/>}/>
         <Route path="register/" element={<Register/>}/>
         <Route path="/doctordashboard" element={<DoctorDashboard/>}></Route>
-        <Route path="/patient/dashboard" element={<PatientDashboard />} />
-        <Route path="/admin/dashboard"   element={<AdminDashboard />} />
+        <Route path="/patientdashboard" element={<PatientDashboard />} />
+        <Route path="/admindashboard"   element={<AdminDashboard />} />
 
       </Routes>
     </BrowserRouter>
