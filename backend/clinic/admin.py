@@ -10,7 +10,7 @@ class DoctorAdmin(admin.ModelAdmin):
     list_display=['doctor_name','doctor_email','specialization']
 
     def doctor_name(self,obj):
-        return obj.user.name
+        return obj.user.username
     
     def doctor_email(self,obj):
         return obj.user.email
@@ -20,7 +20,7 @@ class PatientAdmin(admin.ModelAdmin):
     list_display=['patient_name','patient_email','age']
 
     def patient_name(self,obj):
-        return obj.user.name
+        return obj.user.username
     
     def patient_email(self,obj):
         return obj.user.email
@@ -31,7 +31,7 @@ class Admin(admin.ModelAdmin):
     list_display=['admin_name','admin_email','department']
 
     def admin_name(self,obj):
-        return obj.user.name
+        return obj.user.username
     
     def admin_email(self,obj):
         return obj.user.email
