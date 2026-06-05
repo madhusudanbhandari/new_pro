@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment
-from .serializers import userSerializer,DoctorSerializer,PatientSerializer,RegisterSerializer,LoginSerializer,AppointmentSerializer,AppointmentStatusSerializer
+from .serializers import userSerializer,DoctorSerializer,PatientSerializer,RegisterSerializer,LoginSerializer,AppointmentSerializer,AppointmentStatusSerializer,DoctorListSerializer
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny,IsAuthenticated
@@ -34,7 +34,7 @@ def login_user(request):
 @permission_classes([IsAuthenticated])
 def get_doctors(request):
     doctors=User.objects.filter(role='doctor')
-    serializer=DoctorSerializer(doctors,many=True)
+    serializer=DoctorListSerializer(doctors,many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])

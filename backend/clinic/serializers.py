@@ -24,6 +24,23 @@ class DoctorSerializer(serializers.ModelSerializer):
         model=DoctorProfile
         fields=['id','username','email','specialization','license_number','experience_years','hospital']
 
+class DoctorListSerializer(serializers.ModelSerializer):
+    doctor_profile=serializers.SerializerMethodField()
+
+    class Meta:
+        model=User
+        fields=['id','username','email','doctor_profile']
+
+    def get_doctor_profile(self,obj):
+        try:
+            profile=obj.doctor_profile
+            return{
+                'specialization':profile.specialization,
+                'experience_years':profile.experience_years,
+                'hospital':profile.hospital,
+            }
+        except:
+            return None
 
 class PatientSerializer(serializers.ModelSerializer):
     username=serializers.CharField(source='user.username',read_only=True)
@@ -38,10 +55,25 @@ class PatientSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True)
     username=serializers.CharField()
-    
+    specialization = serializers.CharField(required=False, allow_blank=True)
+    license_number = serializers.CharField(required=False, allow_blank=True)
+    experience_years = serializers.IntegerField(required=False)
+    hospital = serializers.CharField(required=False, allow_blank=True)
+
+    age = serializers.IntegerField(required=False)
+    gender = serializers.CharField(required=False, allow_blank=True)
+    blood_group = serializers.CharField(required=False, allow_blank=True)
+    address = serializers.CharField(required=False, allow_blank=True)
+
+    department = serializers.CharField(required=False, allow_blank=True)
+        
     class Meta:
         model=User
-        fields=['id','username','email','password','role']
+        fields=['id','username','email','password','role',
+            'specialization',
+            'license_number',
+            'experience_years',
+            'hospital','age','gender','blood_group','address','department']
 
     def validate_email(self,value):
         if User.objects.filter(email=value).exists():
@@ -50,9 +82,18 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
     def create(self,validated_data):
+        specialization = validated_data.pop('specialization', None)
+        license_number = validated_data.pop('license_number', None)
+        experience_years = validated_data.pop('experience_years', 0)
+        hospital = validated_data.pop('hospital', None)
         password=validated_data.pop('password')
-
+        age=validated_data.pop('age',0)
+        gender=validated_data.pop('gender',None)
+        blood_group=validated_data.pop('blood_group',None)
+        address=validated_data.pop('address',None)
+        department=validated_data.pop('department',None)
         # email=validated_data.get('email')
+
         user=User(**validated_data)
         
         # user.username=email
@@ -60,11 +101,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         if user.role=='doctor':
-            DoctorProfile.objects.create(user=user)
+            DoctorProfile.objects.create(user=user,specialization=specialization,
+                license_number=license_number,
+                experience_years=experience_years,
+                hospital=hospital)
         elif user.role=='patient':
-            PatientProfile.objects.create(user=user)
+            PatientProfile.objects.create(user=user,
+                                          age=age,gender=gender,blood_group=blood_group,address=address)
         elif user.role=='admin':
-            AdminProfile.objects.create(user=user)
+            AdminProfile.objects.create(user=user,department=department)
 
         return user
         
