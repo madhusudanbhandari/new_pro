@@ -57,10 +57,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     username=serializers.CharField()
     specialization = serializers.CharField(required=False, allow_blank=True)
     license_number = serializers.CharField(required=False, allow_blank=True)
-    experience_years = serializers.IntegerField(required=False)
+    experience_years = serializers.IntegerField(required=False,allow_null=True)
     hospital = serializers.CharField(required=False, allow_blank=True)
 
-    age = serializers.IntegerField(required=False)
+    age = serializers.IntegerField(required=False,allow_null=True)
     gender = serializers.CharField(required=False, allow_blank=True)
     blood_group = serializers.CharField(required=False, allow_blank=True)
     address = serializers.CharField(required=False, allow_blank=True)

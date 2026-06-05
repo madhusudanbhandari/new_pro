@@ -28,7 +28,8 @@ def login_user(request):
                         status=200)
     print(serializer.errors)
     return Response(serializer.errors,status=400)
-    
+
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -42,11 +43,13 @@ def get_doctors(request):
 def book_appointment(request):
     if request.user.role!='patient':
         return Response({'error':'Only patient can make bookings'},status=403)
-    
-    serializer=AppointmentSerializer(data=request.data)
+    data=request.data.copy()
+    data['patient']=request.user.id
+    serializer=AppointmentSerializer(data=data)
     if serializer.is_valid():
         serializer.save(patient=request.user)
         return Response({'message':'Appointment Booked','appointment':serializer.data},status=201)
+    print(serializer.errors)
     return Response(serializer.errors,status=400)
 
 @api_view(['GET'])
@@ -55,12 +58,12 @@ def get_appointments(request):
     user=request.user
 
     if user.role=='patient':
-        appointmets=Appointment.object.filter(patient=user).oder_by('-created_at')
+        appointmets=Appointment.objects.filter(patient=user).order_by('-created_at')
 
-    if user.role=='doctor':
+    elif user.role=='doctor':
         appointmets=Appointment.objects.filter(doctor=user).order_by('-created_at')
 
-    if user.role=='admin':
+    elif user.role=='admin':
         appointmets=Appointment.objects.filter(admin=user).order_by('-created_at')
 
     else:
