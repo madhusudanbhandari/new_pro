@@ -4,4 +4,9 @@ from .import views
 urlpatterns=[
     path('register/',views.register_user),
     path('login/',views.login_user),
+    path('doctors/',  views.get_doctors,    name='doctors'),
+    path('appointments/',              views.get_appointments,         name='appointments'),
+    path('appointments/book/',         views.book_appointment,         name='book-appointment'),
+    path('appointments/<int:pk>/status/', views.update_appointment_status, name='update-status'),
+    path('appointments/<int:pk>/cancel/', views.cancel_appointment,    name='cancel-appointment'),
 ]

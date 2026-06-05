@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User,DoctorProfile,PatientProfile,AdminProfile
+from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -92,3 +92,40 @@ class LoginSerializer(serializers.Serializer):
             'username':user.username,
           
         }
+    
+class AppointmentSerializer(serializers.ModelSerializer):
+    patient_name = serializers.CharField(source='patient.username', read_only=True)
+    doctor_name  = serializers.CharField(source='doctor.username',  read_only=True)
+    patient_email= serializers.CharField(source='patient.email',    read_only=True)
+    doctor_email = serializers.CharField(source='doctor.email',     read_only=True)
+
+    class Meta:
+        model=Appointment
+        fields = [
+            'id',
+            'patient', 'patient_name', 'patient_email',
+            'doctor',  'doctor_name',  'doctor_email',
+            'date', 'time', 'reason', 'status',
+            'created_at',
+        ]
+        read_only_fields=['petient','status','created_at']
+
+    def validate(self,data):
+        if data['doctor'].role !='doctor':
+            raise serializers.ValidationError('Selected user is not a doctor')
+        
+        if Appointment.objects.filter(
+            doctor=data['doctor'],
+            date=data['date'],
+            time=data['time']
+
+        ).exists():
+            raise serializers.ValidationError('This doctor already has an appointment')
+        
+        return data
+    
+
+class AppointmentStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Appointment
+        fields=['id','status']

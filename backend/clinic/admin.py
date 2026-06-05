@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User,DoctorProfile,PatientProfile,AdminProfile
+from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -37,4 +37,11 @@ class Admin(admin.ModelAdmin):
     def admin_email(self,obj):
         return obj.user.email
     
+
+@admin.register(Appointment)
+class AppointmentAdmin(admin.ModelAdmin):
+    list_display  = ('patient', 'doctor', 'date', 'time', 'status', 'created_at')
+    list_filter   = ('status', 'date')
+    search_fields = ('patient__username', 'doctor__username')
+
     
