@@ -5,12 +5,12 @@ export default function DoctorDashboard(){
     const[appointments,setAppointments]=useState([]);
     const [loading, setLoading]=useState(true);
     const navigate=useNavigate();
-    //const token=localStorage.getItem('access');
+    const token=localStorage.getItem('access');
     const username=localStorage.getItem('username');
 
     
         useEffect(()=>{
-            const token=localStorage.getItem('access');
+            // const token=localStorage.getItem('access');
             if(!token){
                 navigate('/');
                 return;
@@ -27,28 +27,19 @@ export default function DoctorDashboard(){
                     navigate('/');
                     return;
                 }
+                return response.json();
             })
             .then(data=>{
                 if(data){
-                    setAppointment(data);
+                    setAppointments(data);
                     setLoading(false);
                 }
             })
             .catch(()=>setLoading(false));
         },[]);
-    // useEffect(()=>{
-    //     fetch('http://127.0.0.1:8000/api/appointments/',{
-    //         headers:{
-    //         'Authorization':`Bearer ${token}`
-    //         }
-    //     })
-    //     .then(response=>response.json())
-    //     .then(data=>{setAppointments(data); setLoading(false);})
-    //     .catch(()=>setLoading(false));
-    // },[]);
-
+   
     const updateStatus=async(id,status)=>{
-        const response=await fetch('http://127.0.0.1:8000/api/appointments/${id}/status/',{
+        const response=await fetch(`http://127.0.0.1:8000/api/appointments/${id}/status/`,{
             method:'PATCH',
             headers:{
                 'Content-Type':'application/json',
