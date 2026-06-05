@@ -6,7 +6,8 @@ import Register from './pages/RegisterPage';
 import DoctorDashboard  from './pages/DoctorDashboard'
 import PatientDashboard from './pages/PatientDashboard'
 import AdminDashboard   from './pages/AdminDashboard'
-
+import ProtectedRoute from "./pages/ProtectedRoute";
+import BookAppointment from './pages/BookAppointment';
 
 export default function App(){
   return(
@@ -14,9 +15,23 @@ export default function App(){
       <Routes>
         <Route path="/" element={<Login/>}/>
         <Route path="register/" element={<Register/>}/>
-        <Route path="/doctordashboard" element={<DoctorDashboard/>}></Route>
-        <Route path="/patientdashboard" element={<PatientDashboard />} />
-        <Route path="/admindashboard"   element={<AdminDashboard />} />
+        <Route path="/doctordashboard" element={
+          <ProtectedRoute allowedRole="doctor">
+          <DoctorDashboard/>
+          </ProtectedRoute>}/>
+        <Route path="/patientdashboard" element={
+          <ProtectedRoute allowedRole="patient">
+          <PatientDashboard />
+          </ProtectedRoute>} />
+        <Route path="/admindashboard"   element={
+          <ProtectedRoute allowedRole="admin">
+          <AdminDashboard />
+          </ProtectedRoute>} />
+        <Route path="/bookappointment" element={
+          <ProtectedRoute allowedRole='patient'>
+            <BookAppointment/>
+          </ProtectedRoute>
+        }/>
 
       </Routes>
     </BrowserRouter>

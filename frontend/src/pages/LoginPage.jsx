@@ -33,6 +33,7 @@ export default function Login(){
                 localStorage.setItem('refresh',data.refresh);
                 localStorage.setItem('role',data.role);
                 localStorage.setItem('email',data.email);
+                localStorage.setItem('username', data.username);
 
                 if (data.role==='doctor') navigate('/doctordashboard')
                 else if (data.role==='patient' ) navigate('/patientdashboard')
