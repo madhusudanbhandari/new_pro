@@ -8,23 +8,26 @@ export default function Register() {
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
-        username:'',
-        email:    '',
-        password: '',
-        role:     '',
-       
-        specialization:   '',
-        license_number:   '',
-        experience_years: '',
-        hospital:         '',
-      
-        age:         '',
-        gender:      '',
-        blood_group: '',
-        address:     '',
-        
-        department: '',
+    username: '',
+    email: '',
+    password: '',
+    role: '',
+
+    specialization: '',
+    license_number: '',
+    experience_years: '',
+    hospital: '',
+
+    age: '',
+    gender: '',
+    blood_group: '',
+    address: '',
+
+    department: '',
     });
+  
+    
+ 
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,6 +39,7 @@ export default function Register() {
     };
 
     const handleSubmit = async (e) => {
+        console.log(form);
         e.preventDefault();
         setError('');
 
@@ -43,15 +47,45 @@ export default function Register() {
             setError('Please select a role.');
             return;
         }
+        const payload={
+        username:form.username,
+        email:form.email,
+        password:form.password,
+        role:form.role,
+
+        };
+            
+        if (form.role === "doctor") {
+            payload.specialization = form.specialization;
+            payload.license_number = form.license_number;
+            payload.experience_years = form.experience_years
+                ? parseInt(form.experience_years)
+                : 0;
+            payload.hospital = form.hospital;
+        }
+
+        if (form.role === "patient") {
+            payload.age = form.age ? parseInt(form.age) : 0;
+            payload.gender = form.gender;
+            payload.blood_group = form.blood_group;
+            payload.address = form.address;
+        }
+
+        if (form.role === "admin") {
+            payload.department = form.department;
+        }
         
 
         setLoading(true);
+
+        
+        
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/register/', {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(form),
+                body:    JSON.stringify(payload),
             });
 
             const data = await response.json();

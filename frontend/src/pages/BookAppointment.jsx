@@ -16,13 +16,24 @@ export default function BookAppointment(){
 
     });
     const token=localStorage.getItem('access')
-     useEffect(() => {
+
+    useEffect(() => {
         fetch('http://127.0.0.1:8000/api/doctors/', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
-        .then(res => res.json())
-        .then(data => setDoctors(data))
-        .catch(() => setError('Failed to load doctors.'));
+        .then(res =>{
+            console.log('status:',res.status);
+            return res.json();
+        })
+        .then(data =>{
+            console.log(data);
+            setDoctor(data);
+         })
+         .catch(err=>{
+            console.error(err);
+            setError('Failed to load doctors');
+         });
+    
     }, []);
     
     const handleChange=(e)=>{
@@ -35,7 +46,7 @@ export default function BookAppointment(){
         setLoading(true);
 
         try{
-            const response=await fetch('http://127/0.0.1:8000/api/appointments/book/',{
+            const response=await fetch('http://127.0.0.1:8000/api/appointments/book/',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',

@@ -2,18 +2,19 @@ import React, {useEffect,useState} from "react";
 import {useNavigate} from 'react-router-dom';
 
 export default function Patient(){
-    const[appointment, setAppointment]=useState([]);
+    const[appointments, setAppointments]=useState([]);
     const[loading, setLoading]=useState(true);
     const navigate=useNavigate();
     const username=localStorage.getItem('username');
+            
+    const token=localStorage.getItem('access');
 
     useEffect(()=>{
-        const token=localStorage.getItem('access');
         if(!token){
             navigate('/');
             return;
         }
-        fetch('http://127.0.0.1:8000/api/appointments',{
+        fetch('http://127.0.0.1:8000/api/appointments/',{
             headers:{
                 'Authorization':`Bearer ${token}`,
                 'Content-Type':'application/json',
@@ -23,12 +24,13 @@ export default function Patient(){
             if(response.status===401){
                 localStorage.clear();
                 navigate('/');
-                return;
+                return null;
             }
+            return response.json();
         })
         .then(data=>{
             if(data){
-                setAppointment(data);
+                setAppointments(data);
                 setLoading(false);
             }
         })
@@ -36,7 +38,8 @@ export default function Patient(){
     },[]);
 
     const handleCancel=async(id)=>{
-        const response=await fetch('http://127.0.0.1:8000/api/appointments/${id}/cancel',{
+
+        const response=await fetch(`http://127.0.0.1:8000/api/appointments/${id}/cancel`,{
             method:'PATCH',
             headers:{'Authorization': `Bearer ${token}`},
         });
