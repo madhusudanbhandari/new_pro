@@ -6,7 +6,7 @@ export default function Patient(){
     const[loading, setLoading]=useState(true);
     const navigate=useNavigate();
     const username=localStorage.getItem('username');
-            
+    const[queueInfo, setQueueInfo]=useState(null);
     const token=localStorage.getItem('access');
 
     useEffect(()=>{
@@ -14,6 +14,14 @@ export default function Patient(){
             navigate('/');
             return;
         }
+        fetch('http://127.0.0.1:8000/api/queueposition/',{
+            headers:{
+                'Authorization':`Bearer ${token}`
+            }
+        })
+        .then(res=>res.json())
+        .then(data=>setQueueInfo(data));
+
         fetch('http://127.0.0.1:8000/api/appointments/',{
             headers:{
                 'Authorization':`Bearer ${token}`,
@@ -81,7 +89,19 @@ export default function Patient(){
                 + Book New Appointment
             </button>
 
-            <div className="bg-white rounded-2xl shadow-md p-6">
+            {queueInfo?.position && (
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-6 text-center">
+                    <p className="text-sm text-blue-500 font-medium">Your Queue Position</p>
+                    <p className="text-5xl font-bold text-blue-600 my-2">#{queueInfo.position}</p>
+                    <p className="text-gray-600">Token No: <span className="font-bold">{queueInfo.token_no}</span></p>
+                    <p className="text-sm text-gray-500 mt-1">Dr. {queueInfo.doctor_name}</p>
+                    {queueInfo.total_ahead === 0
+                        ? <p className="text-green-600 font-semibold mt-2">🎉 You're next!</p>
+                        : <p className="text-gray-500 mt-2">{queueInfo.total_ahead} patient(s) ahead of you</p>
+                    }
+                    </div>
+                )}
+                        <div className="bg-white rounded-2xl shadow-md p-6">
                 <h2 className="text-lg font-semibold text-gray-700 mb-4">My Appointments</h2>
 
                 {loading? (
