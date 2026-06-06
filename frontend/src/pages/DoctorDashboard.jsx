@@ -114,14 +114,14 @@ export default function DoctorDashboard(){
                                         {appt.status}
                                     </span>
 
-                                    {appt.status === 'pending' && (
+                                    {/* {appt.status === 'pending' && (
                                         <button
                                             onClick={() => updateStatus(appt.id, 'confirmed')}
                                             className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full hover:bg-green-200"
                                         >
                                             Confirm
                                         </button>
-                                    )}
+                                    )} */}
                                     {appt.status === 'confirmed' && (
                                         <button
                                             onClick={() => updateStatus(appt.id, 'completed')}
@@ -137,7 +137,11 @@ export default function DoctorDashboard(){
                                         >
                                             Cancel
                                         </button>
+                                    
                                     )}
+                                    <p className="font-bold text-blue-600">
+                                        Token:{appt.token_no}
+                                    </p>
                                 </div>
                             </div>
                         ))}

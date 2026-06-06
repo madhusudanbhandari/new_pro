@@ -39,7 +39,7 @@ export default function Patient(){
 
     const handleCancel=async(id)=>{
 
-        const response=await fetch(`http://127.0.0.1:8000/api/appointments/${id}/cancel`,{
+        const response=await fetch(`http://127.0.0.1:8000/api/appointments/${id}/cancel/`,{
             method:'PATCH',
             headers:{'Authorization': `Bearer ${token}`},
         });
@@ -84,13 +84,17 @@ export default function Patient(){
             <div className="bg-white rounded-2xl shadow-md p-6">
                 <h2 className="text-lg font-semibold text-gray-700 mb-4">My Appointments</h2>
 
-                {loading ? (
+                {loading? (
                     <p className="text-gray-500">Loading...</p>
                 ) : appointments.length === 0 ? (
                     <p className="text-gray-500">No appointments yet.</p>
                 ) : (
                     <div className="space-y-4">
-                        {appointments.map(appt => (
+                        {appointments
+                        .filter(appt=>appt.status!=='cancelled')
+                        .map(appt => (
+                            
+                            
                             <div key={appt.id} className="border rounded-xl p-4 flex justify-between items-center">
                                 <div>
                                     <p className="font-semibold text-gray-800">Dr. {appt.doctor_name}</p>
@@ -101,6 +105,11 @@ export default function Patient(){
                                     <span className={`text-xs px-3 py-1 rounded-full font-medium ${statusColor(appt.status)}`}>
                                         {appt.status}
                                     </span>
+                                    {appt.token_no && (
+                                    <p className="font-bold text-green-600">
+                                        Token: {appt.token_no}
+                                            </p>
+                                        )}
                                     {appt.status === 'pending' && (
                                         <button
                                             onClick={() => handleCancel(appt.id)}
