@@ -47,7 +47,8 @@ def book_appointment(request):
     data['patient']=request.user.id
     serializer=AppointmentSerializer(data=data)
     if serializer.is_valid():
-        serializer.save(patient=request.user)
+        serializer.save(patient=request.user,
+                        status='pending')
         return Response({'message':'Appointment Booked','appointment':serializer.data},status=201)
     print(serializer.errors)
     return Response(serializer.errors,status=400)
@@ -64,7 +65,7 @@ def get_appointments(request):
         appointmets=Appointment.objects.filter(doctor=user).order_by('-created_at')
 
     elif user.role=='admin':
-        appointmets=Appointment.objects.filter(admin=user).order_by('-created_at')
+        appointmets=Appointment.objects.all()
 
     else:
         return Response({'error':'Unauthorized'},status=403)
@@ -114,24 +115,17 @@ def assign_token(request):
     appointment_id=request.data.get('appointment_id')
     token_no=request.data.get('token_no')
 
-    if Appointment.objects.filter(
-        date=appointment.date,
-        token_no=token_no
-    ).exist():
-        return Response(
-            {'message':'Token already assigned'},
-            status=400
-        )
-
+    
     try:
         appointment=Appointment.objects.get(id=appointment_id)
         appointment.token_no=token_no
         appointment.admin=request.user
+        appointment.status='confirmed'
         appointment.save()
 
         return Response({
             'message':'Token assigned successfully',
-            'token_no':appointment.token_no
+           'token_no':token_no
         })
     except Appointment.DoesNotExist:
         return Response(
