@@ -143,6 +143,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
     doctor_name  = serializers.CharField(source='doctor.username',  read_only=True)
     patient_email= serializers.CharField(source='patient.email',    read_only=True)
     doctor_email = serializers.CharField(source='doctor.email',     read_only=True)
+    admin_name=serializers.CharField(source='admin.username',read_only=True)
 
     class Meta:
         model=Appointment
@@ -151,10 +152,9 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'patient', 'patient_name', 'patient_email',
             'doctor',  'doctor_name',  'doctor_email',
             'date', 'time', 'reason', 'status',
-            'created_at',
+            'created_at','admin','admin_name','token_no'
         ]
-        read_only_fields=['petient','status','created_at']
-
+    read_only_fields=['patient','status','created_at']
     def validate(self,data):
         if data['doctor'].role !='doctor':
             raise serializers.ValidationError('Selected user is not a doctor')
@@ -174,3 +174,4 @@ class AppointmentStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model=Appointment
         fields=['id','status']
+

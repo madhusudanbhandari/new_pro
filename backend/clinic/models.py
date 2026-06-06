@@ -63,7 +63,8 @@ class Appointment(models.Model):
     status=models.CharField(max_length=20,choices=STATUS_CHOICES,default='pending')
     reason=models.TextField(blank=True)
     created_at=models.DateTimeField(auto_now_add=True)
-
+    token_no=models.IntegerField(null=True,blank=True)
+    
     def __str__(self):
         return f'{self.patient.username}->Dr.{self.doctor.username} on {self.date} at {self.time}'
     

@@ -105,3 +105,58 @@ def cancel_appointment(request,pk):
     appointment.save()
     return Response({'message':'Appointment cancelled'})
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def assign_token(request):
+    if request.user.role!='admin':
+        return Response({'messaeg':'Only admin can assign token'},status=403)
+    
+    appointment_id=request.data.get('appointment_id')
+    token_no=request.data.get('token_no')
+
+    if Appointment.objects.filter(
+        date=appointment.date,
+        token_no=token_no
+    ).exist():
+        return Response(
+            {'message':'Token already assigned'},
+            status=400
+        )
+
+    try:
+        appointment=Appointment.objects.get(id=appointment_id)
+        appointment.token_no=token_no
+        appointment.admin=request.user
+        appointment.save()
+
+        return Response({
+            'message':'Token assigned successfully',
+            'token_no':appointment.token_no
+        })
+    except Appointment.DoesNotExist:
+        return Response(
+            {'message':'Appointment not found'},
+            status=404
+        )
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_token(request):
+    if request.user.role!='patient':
+        return Response(
+            {'message':'Only Patients can view tokens'},
+            status=403
+        )
+    appointments=Appointment.objects.filter(
+        patient=request.user,
+      
+    ).exclude(
+        token_no__isnull=True
+       
+    )
+    serializer=AppointmentSerializer(
+        appointments,
+        many=True
+    )
+    return Response(serializer.data)
