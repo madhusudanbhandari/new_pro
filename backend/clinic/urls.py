@@ -10,5 +10,6 @@ urlpatterns=[
     path('appointments/<int:pk>/status/', views.update_appointment_status, name='update-status'),
     path('appointments/<int:pk>/cancel/', views.cancel_appointment,    name='cancel-appointment'),
     path('settoken/',views.assign_token,name='give_token'),
-    path('gettoken/',views.my_token,name='get token')
+    path('gettoken/',views.my_token,name='get token'),
+    path('queueposition/',views.queue_position),
 ]

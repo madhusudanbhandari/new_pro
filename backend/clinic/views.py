@@ -154,3 +154,39 @@ def my_token(request):
         many=True
     )
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def queue_position(request):
+    if request.user.role!='patient':
+        return Response({'error':'patients only'},status=403)
+    
+
+    
+    patient_appointment=Appointment.objects.filter(
+        patient=request.user,
+        status='confirmed',
+        token_no__isnull=False
+       
+    ).order_by('date','time').first()
+
+    if not patient_appointment or not patient_appointment.token_no:
+        return Response({'position':None, 'message':'No active token today'})
+    
+
+    ahead=Appointment.objects.filter(
+        doctor=patient_appointment.doctor,
+        date=patient_appointment.date, 
+        status='confirmed',
+        token_no__lt=patient_appointment.token_no
+    ).count()
+
+    return Response({
+        'position':ahead+1,
+        'token_no':patient_appointment.token_no,
+        'doctor_name':patient_appointment.doctor.username,
+        'total_ahead':ahead,
+        'appointment_date': str(patient_appointment.date),
+        'appointment_time': str(patient_appointment.time),
+
+    })
