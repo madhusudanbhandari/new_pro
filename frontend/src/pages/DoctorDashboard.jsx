@@ -139,8 +139,11 @@ export default function DoctorDashboard(){
                                         </button>
                                     
                                     )}
-                                    <p className="font-bold text-blue-600">
+                                    {/* <p className="font-bold text-blue-600">
                                         Token:{appt.token_no}
+                                    </p> */}
+                                    <p className="font-bold text-blue-600">
+                                        Token:{appt.token_no ?? 'Not assigned'}
                                     </p>
                                 </div>
                             </div>

@@ -49,9 +49,14 @@ export default function AdminDashboard(){
                 appointment_id:id,
                 token_no:tokens[id]
             })
+         });
+            if (response.ok){
+                setTokens(prev => ({ ...prev, [id]: '' }));
+
+            }
            
 
-        });
+
         // if(response.ok){
         //     setAppointments(appointments.map(a=>
         //         a.id===id?{...a, status}:a
@@ -113,14 +118,14 @@ export default function AdminDashboard(){
                                     <p className="font-bold">
                                         Token: {appt.token_no || 'Not Assigned'}
                                     </p>
+                                    {!appt.token_no &&(
                                      <input type="number"
                                         placeholder="Token no"
                                         value={tokens[appt.id] || ''}
                                         onChange={(e)=>
-                                            setTokens({
-                                                ...tokens,[appt.id]:e.target.value
-                                            })
+                                            setTokens(prev => ({ ...prev, [appt.id]: e.target.value }))
                                         } />
+                                    )}
                            
                                         
                                 </div>
