@@ -4,7 +4,7 @@ const refreshAccessToken=async()=>{
     const refresh=localStorage.getItem('refresh')
     if(!refresh) return null;
 
-    const response=await fetch (`${BASE_URL}/token/refersh/`,{
+    const response=await fetch (`${BASE_URL}/token/refresh/`,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({refresh}),
@@ -22,13 +22,13 @@ const refreshAccessToken=async()=>{
     }
 };
 
-export const apiFetch=async(endpoint,option={})=>{
+export const apiFetch=async(endpoint,options={})=>{
     let token=localStorage.getItem('access');
 
     const makeRequest=(accessToken)=> fetch (`${BASE_URL}${endpoint}`,{
         ...options,
         headers:{
-            'Content-Type':'applicaion/json',
+            'Content-Type':'application/json',
             'Authorization':`Bearer ${accessToken}`,
             ...options.headers,   
         },
