@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment
-from .serializers import userSerializer,DoctorSerializer,PatientSerializer,RegisterSerializer,LoginSerializer,AppointmentSerializer,AppointmentStatusSerializer,DoctorListSerializer
+from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment,DoctorAvailability
+from .serializers import userSerializer,DoctorSerializer,PatientSerializer,RegisterSerializer,LoginSerializer,AppointmentSerializer,AppointmentStatusSerializer,DoctorListSerializer,DoctorAvailabilitySerializer
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny,IsAuthenticated
-
+from datetime import datetime, timedelta
 # Create your views here.
 
 @api_view(['POST'])
@@ -190,3 +190,86 @@ def queue_position(request):
         'appointment_time': str(patient_appointment.time),
 
     })
+
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
+def doctor_availability(request):
+    if request.user.role!='doctor':
+        return Response({'error':'Doctor Only'},status=403)
+    
+    if request.method=='GET':
+        availability=DoctorAvailability.objects.filter(doctor=request.user)
+        serializer=DoctorAvailabilitySerializer(availability,many=True)
+        return Response(serializer.data)
+    
+    if request.method=='POST':
+        day=request.data.get('day')
+        existing=DoctorAvailability.objects.filter(
+            doctor=request.user, day=day
+        ).first()
+
+        if existing:
+            serializer=DoctorAvailabilitySerializer(existing,data=request.data,partial=True)
+        else:
+            serializer=DoctorAvailabilitySerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(doctor=request.user)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors,status=400)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_available_slots(request, doctor_id):
+    date_str = request.query_params.get('date')  
+    if not date_str:
+        return Response({'error': 'date is required'}, status=400)
+
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return Response({'error': 'Invalid date format'}, status=400)
+
+    day_name = date.strftime('%A').lower()
+    try:
+        availability = DoctorAvailability.objects.get(
+            doctor_id=doctor_id, day=day_name
+        )
+    except DoctorAvailability.DoesNotExist:
+        return Response({'slots': [], 'message': 'Doctor not available on this day'})
+
+    slots=[]
+    current=datetime.combine(date,availability.start_time)
+    end=datetime.combine(date,availability.end_time)
+
+
+    while current + timedelta(minutes=availability.slot_duration)<=end:
+        slots.append(current.strftime('%H:%M'))
+        current+=timedelta(minutes=availability.slot_duration)
+
+
+    booked=Appointment.objects.filter(
+        doctor_id=doctor_id,
+        date=date,
+    ).exclude(status='cancelled').values_list('time',flat=True)
+
+
+    booked_times = [t.strftime('%H:%M') for t in booked]
+    available_slots = [s for s in slots if s not in booked_times]
+
+    return Response({
+        'slots': available_slots,
+        'day': day_name,
+        'date': date_str,
+    })
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_availability(request,pk):
+    try:
+        availability=DoctorAvailability.objects.filter(pk=pk,doctor=request.user)
+        availability.delete()
+    except DoctorAvailability.DoesNotExist:
+        return Response({'error':'Not found'},status=404)

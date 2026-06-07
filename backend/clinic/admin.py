@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment
+from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment,DoctorAvailability
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -45,3 +45,6 @@ class AppointmentAdmin(admin.ModelAdmin):
     search_fields = ('patient__username', 'doctor__username')
 
     
+@admin.register(DoctorAvailability)
+class DoctorAvailabilityAdmin(admin.ModelAdmin):
+    list_display=('doctor','start_time','end_time')

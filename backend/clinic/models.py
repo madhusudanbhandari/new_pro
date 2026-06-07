@@ -72,3 +72,25 @@ class Appointment(models.Model):
 
 
 
+class DoctorAvailability(models.Model):
+    DAYS_CHOICES=[
+        ('monday','Monday'),
+        ('tuesday','Tuesday'),
+        ('wednesday','Wednesday'),
+        ('thursday','Thursday'),
+        ('friday','Friday'),
+        ('saturday','Saturday'),
+        ('sunday','Sunday'),
+    ]
+    doctor=models.ForeignKey(User,on_delete=models.CASCADE,related_name='availability')
+    day=models.CharField(max_length=10,choices=DAYS_CHOICES)
+    start_time=models.TimeField()
+    end_time=models.TimeField()
+    slot_duration=models.IntegerField(default=30)
+
+    class Meta:
+        unique_together=['doctor','day']
+
+    def __str__(self):
+        return f'{self.doctor.username}-{self.day} ({self.start_time}to{self.end_time})'
+    

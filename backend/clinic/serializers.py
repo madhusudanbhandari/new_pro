@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment
+from .models import User,DoctorProfile,PatientProfile,AdminProfile,Appointment,DoctorAvailability
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -175,3 +175,8 @@ class AppointmentStatusSerializer(serializers.ModelSerializer):
         model=Appointment
         fields=['id','status']
 
+
+class DoctorAvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model=DoctorAvailability
+        fields=['id','day','start_time','end_time','slot_duration']

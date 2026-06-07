@@ -14,4 +14,7 @@ urlpatterns=[
     path('gettoken/',views.my_token,name='get token'),
     path('queueposition/',views.queue_position),
     path('token/refresh',TokenRefreshView.as_view(),name='token_refresh'),
+    path('availability/', views.doctor_availability, name='availability'),
+    path('availability/<int:pk>/delete/', views.delete_availability, name='delete-availability'),
+    path('slots/<int:doctor_id>/', views.get_available_slots, name='available-slots'),
 ]
