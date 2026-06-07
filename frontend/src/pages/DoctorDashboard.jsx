@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../api";
 
 export default function DoctorDashboard(){
     const[appointments,setAppointments]=useState([]);
@@ -15,12 +16,13 @@ export default function DoctorDashboard(){
                 navigate('/');
                 return;
             }
-            fetch('http://127.0.0.1:8000/api/appointments',{
-                headers:{
-                    'Authorization':`Bearer ${token}`,
-                    'Content-Type':'application/json',
-                }
-            })
+            // fetch('http://127.0.0.1:8000/api/appointments',{
+            //     headers:{
+            //         'Authorization':`Bearer ${token}`,
+            //         'Content-Type':'application/json',
+            //     }
+            // })
+            apiFetch('/appointments/')
             .then(response=>{
                 if(response.status===401){
                     localStorage.clear();
@@ -39,12 +41,8 @@ export default function DoctorDashboard(){
         },[]);
    
     const updateStatus=async(id,status)=>{
-        const response=await fetch(`http://127.0.0.1:8000/api/appointments/${id}/status/`,{
+        const response=await apiFetchfetch(`/appointments/${id}/status/`,{
             method:'PATCH',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization':`Bearer ${token}`,
-            },
             body:JSON.stringify({status}),
 
         });
@@ -139,9 +137,7 @@ export default function DoctorDashboard(){
                                         </button>
                                     
                                     )}
-                                    {/* <p className="font-bold text-blue-600">
-                                        Token:{appt.token_no}
-                                    </p> */}
+                                    
                                     <p className="font-bold text-blue-600">
                                         Token:{appt.token_no ?? 'Not assigned'}
                                     </p>

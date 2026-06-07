@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../api";
 
 export default function AdminDashboard(){
     const[appointments,setAppointments]=useState([]);
@@ -15,12 +16,7 @@ export default function AdminDashboard(){
                 navigate('/');
                 return;
             }
-            fetch('http://127.0.0.1:8000/api/appointments',{
-                headers:{
-                    'Authorization':`Bearer ${token}`,
-                    'Content-Type':'application/json',
-                }
-            })
+            apiFetch('/appointments/')
             .then(response=>{
                 if(response.status===401){
                     localStorage.clear();
@@ -39,12 +35,8 @@ export default function AdminDashboard(){
         },[]);
    
     const assignToken=async(id)=>{
-        const response=await fetch(`http://127.0.0.1:8000/api/settoken/`,{
+        const response=await apiFetch('/settoken/',{
             method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization':`Bearer ${token}`,
-            },
             body:JSON.stringify({
                 appointment_id:id,
                 token_no:tokens[id]
@@ -57,11 +49,7 @@ export default function AdminDashboard(){
            
 
 
-        // if(response.ok){
-        //     setAppointments(appointments.map(a=>
-        //         a.id===id?{...a, status}:a
-        //     ));
-        // }
+      
     };
     const handleLogout=()=>{
         localStorage.clear();
